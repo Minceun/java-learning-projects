@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.mapper.StudentMapper">
+	<!-- 管理员增加新的学生信息 -->
+	<insert id="addStudent" parameterType="object">
+		INSERT INTO
+		student(sname,sno,password,grade,school,career,sclass,GPA,award,xb,csrq,email,hobby,phone,phone2)
+		values(#{sname},#{sno},MD5(#{password}),#{grade},#{school},#{career},#{sclass},#{GPA},#{award},#{xb},#{csrq},#{email},#{hobby},#{phone},#{phone2})
+	</insert>
+	<insert id="addListStudent" parameterType="object">
+		INSERT INTO
+		student(sname,sno,password,grade,school,career,sclass,GPA,award,xb,csrq,email,hobby,phone,phone2)
+		values(#{sname},#{sno},MD5(#{password}),#{grade},#{school},#{career},#{sclass},#{GPA},#{award},#{xb},#{csrq},#{email},#{hobby},#{phone},#{phone2})
+	</insert>
+	<update id="updateStudentByStu" parameterType="object">
+		UPDATE student 
+		SET grade = #{grade},school = #{school},
+		career = #{career},sclass = #{sclass},GPA = #{GPA},award = #{award},email =
+		#{email},xb = #{xb},
+		csrq = #{csrq},picture = #{picture},hobby = #{hobby},phone = #{phone},phone2 = #{phone2}
+		WHERE sno = #{sno}
+	</update>
+
+	<!-- 根据学号查找学生信息 -->
+	<select id="showStudentInfo" parameterType="object" resultType="map">
+		select * FROM student
+		<where>
+			<if test="sno != null and sno != ''">
+				sno = #{sno}
+			</if>
+		</where>
+	</select>
+
+	<select id="showStudentById" parameterType="object" resultType="map">
+		select * FROM student WHERE sid = #{sid}
+	</select>
+
+	<delete id="deleteStudentById" parameterType="object">
+		DELETE FROM student WHERE sno = #{sno}
+	</delete>
+
+	<select id="check_Student" parameterType="object" resultType="int">
+		SELECT count(*) FROM student where sno = #{username} and password
+		=MD5(#{password})
+	</select>
+	<select id="showStudentGrade" parameterType="object" resultType="map">
+		select grade from student group by grade
+	</select>
+</mapper>

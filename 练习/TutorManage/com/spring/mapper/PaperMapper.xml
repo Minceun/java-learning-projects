@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.mapper.PaperMapper">
+
+	<select id="showPaperTitle" resultType="map">
+		select * 
+		FROM paper 
+		where submit = 1
+	</select>
+
+	<select id="showPaperTitleStudent" resultType="map">
+		select * 
+		FROM paper
+	</select>
+
+	<!-- 查询论文题目的情况信息 -->
+	<select id="showPaperTitleById" resultType="map" parameterType="object">
+		select * 
+		FROM paper
+		<where>
+			<if test="sid != null and sid != ''">
+				sid = #{sid}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 根据论文题目查询论文信息 -->
+	<select id="showPaperInfoByTitle" resultType="map" parameterType="object">
+		select * 
+		FROM paper
+		<where>
+			<if test="title != null and title != ''">
+				title = #{title}
+			</if>
+		</where>
+	</select>
+	
+	<select id="countPaper" parameterType="object" resultType="int">
+		SELECT count(*) FROM paper
+		<where>
+			<if test="sid != null and sid != ''">
+				sid = #{sid}
+			</if>
+			<if test="title != null and title != ''">
+				and title = #{title}
+			</if>
+		</where>
+	</select>
+
+	<!-- 教师发布题目 -->
+	<insert id="addPaperTitle" parameterType="object">
+		INSERT INTO paper(title,tid,isTeaRelease) values(#{title},#{tid},#{isTeaRelease})
+	</insert>
+
+	<!-- 学生自拟题目并添加 （2018-02-19 崔玉龙）-->
+	<insert id="addPaperTitleByStu" parameterType="object">
+		INSERT 
+		INTO paper(title,sid,tid)
+		values(#{title},#{sid},#{tid})
+	</insert>
+
+	<update id="updatePaperTitle" parameterType="object">
+		UPDATE paper SET title = #{title}
+		WHERE paperid = #{paperid}
+	</update>
+	
+	<!-- 修改学生自拟的论文题目 -->
+	<update id="updatePaperSubmit" parameterType="object">
+		UPDATE paper 
+		SET title = #{title}
+		WHERE sid = #{sid} and tid = #{tid}
+	</update>
+
+	<update id="changeTitleState" parameterType="object">
+		UPDATE paper SET state = #{state}
+		WHERE paperid = #{paperid}
+	</update>
+	
+	<!-- 删除学生自拟的论文题目 2018-02-19-->
+	<delete id="deletePaperByStu" parameterType="object">
+		DELETE 
+		FROM paper
+		WHERE paperid = #{paperid} and sid = #{sid}
+	</delete>
+
+	<!-- 撤销提交教师发布的论文题目 2018-02-19-->
+	<update id="deletePaperByTea" parameterType="object">
+		update paper
+		set sid = null
+		WHERE paperid = #{paperid} and sid = #{sid}
+	</update>
+
+	<update id="deleteSid" parameterType="object">
+		update paper SET sid = -1
+		WHERE sid = #{sid}
+	</update>
+	<!-- <select id="showSid" parameterType="object" resultType="map">
+		select sid from paper
+		where sid = #{sid}
+	</select>
+
+	<select id="showSidByPaperId" parameterType="object" resultType="map">
+		select sid from paper
+		where paperid = #{paperid}
+	</select> -->
+
+	<select id="showStudentAndTitle" resultType="map">
+		select * from paper,student where paper.sid= student.sid
+	</select>
+	
+	<!-- 学生选择教师发布的题目 -->
+	<update id="submitPaperByTeaRelease" parameterType="object">
+		UPDATE paper 
+		SET sid = #{sid}
+		WHERE paperid = #{paperid}
+	</update>
+
+	<!-- 选择导师发布的所有论文题目的信息 -->
+	<select id="selectTeaReleasePaper" parameterType="object" resultType="map">
+		select *
+		from paper
+		where tid = (select tid
+					from ts
+					where sid = #{sid}) and isTeaRelease = 1
+	</select>
+	
+	<!-- 教师查询与自己相关的论文题目信息 -->
+	<select id="selectPaperTitleByTea" parameterType="object" resultType="map">
+		select *
+		from paper
+		where tid = #{tid}
+	</select>
+
+	<!-- 教师删除发布的论文题目-->
+	<delete id="tea_deletePaper" parameterType="object">
+		delete
+		from paper
+		where paperid = #{paperid}
+	</delete>
+</mapper>                     

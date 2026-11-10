@@ -1,0 +1,434 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.mapper.AdminMapper">	
+	<!-- 查询是否存在一条管理员记录 -->
+	<select id="check_admin" parameterType="object" resultType="int">
+		select count(*)
+		from admin
+		where adminno = #{username} and password = MD5(#{password})
+	</select>
+	
+	<!-- 根据管理员学号查询该管理员的所有信息 -->
+	<select id="showAdminInfo" parameterType="object" resultType="map">
+		select * FROM admin where adminno = #{adminno}
+	</select>
+
+	<!-- 查询数据库中存放的所有管理员信息 -->
+	<select id="showAdminAll" parameterType="object" resultType="map">
+		select * FROM admin
+	</select>
+	
+	<!-- 根据管理员id号更新该管理员的相关信息 -->
+	<update id="updateAdmin" parameterType="object">
+		UPDATE admin SET adminno = #{adminno},password = #{password},name =
+		#{name},xb = #{xb},department = #{department},
+		csrq = #{csrq},phone = #{phone}
+		WHERE adminid = #{adminid}
+	</update>
+
+	<!-- 根据sno更新ts表中的相应记录（管理员端） -->
+	<update id="updateTS" parameterType="object">
+		UPDATE TS SET tno= #{tno},sno = #{sno}
+		<where>
+			<if test="sno != null and sno != ''">
+				sno = #{sno}
+			</if>
+
+		</where>
+	</update>
+
+	<!-- 删除一条管理员信息记录 -->
+	<delete id="deleteAdminById">
+		DELETE FROM admin WHERE adminno = #{adminno}
+	</delete>
+
+	<!-- 增加一条管理员信息记录 -->
+	<insert id="addAdmin" parameterType="object">
+		INSERT INTO admin(adminno,password,name,xb,department,csrq,phone)
+		values(#{adminno},#{password},#{name},#{xb},#{department},#{csrq},#{phone})
+	</insert>
+
+	<!-- 在添加一条新的管理员记录之前执行此操作,查看是否已经存在管理员学号和管理员姓名相同的记录 -->
+	<select id="exsitAdmin" parameterType="object" resultType="int">
+		select count(*)
+		from admin
+		where adminno = #{adminno} or name = #{name}
+	</select>
+
+	<!-- 根据tno查询ts表中的相应记录信息 -->
+	<select id="showStudentAndTeacher" parameterType="object"
+		resultType="map">
+		select * FROM TS
+		<where>
+			<if test="tid != null and tid != ''">
+				tid = #{tid}
+			</if>
+		</where>
+	</select>
+
+	<!-- 根据学生学号查询该名学生最终选择的导师的工号和姓名信息 -->
+	<select id="showStudentAndTeacherOneById" parameterType="object" resultType="map">
+		select ts.tid,tname,ts.sid
+		FROM TS ts,TEACHER teacher
+		<where>
+			<if test="sid != null and sid != ''">
+				ts.sid = #{sid} and ts.tid = teacher.tid
+			</if>
+		</where>
+	</select>
+	
+	<!-- 查询没有被任何导师选择的学生信息 -->
+	<select id="showStudentNotSelected" parameterType="object" resultType="map">
+		select *
+		from student
+		where sid not in (select sid
+							from ts ) and grade=#{grade}
+	</select>
+
+	<!-- 管理员向ts表中插入一条记录 -->
+	<insert id="AinsertTS" parameterType="object">
+		INSERT INTO TS(sid,tid,stime) values(#{sid},#{tid},#{stime})
+	</insert>
+
+	<!-- 教师选择一名学生 -->
+	<insert id="TselectTS" parameterType="object">
+		INSERT INTO TS(sid,tid,stime) values(#{sid},#{tid},#{stime})
+	</insert>
+
+	<!-- 教师撤销选择一名学生 -->
+	<delete id="TdeleteTS" parameterType="object">
+		DELETE FROM TS where sid = #{sid} and tid = #{tid}
+	</delete>
+
+	<!-- 更新当前教师最大可选的学生数 -->
+	<update id="UpdateTeacherCanSelectNum" parameterType="object">
+		UPDATE TEACHER
+		SET NUM = NUM + #{num}
+		WHERE tid = #{tid}
+	</update>
+
+	<!-- 根据sno查询该名学生的导师志愿选择结果信息 -->
+	<select id="selectRound" parameterType="object" resultType="map">
+		select * FROM selectRound
+		<where>
+			<if test="sid != null and sid != ''">
+				sid = #{sid}
+			</if>
+		</where>
+	</select>
+
+	<!-- 查询该名导师可以进行导师反选的学生名单(得到学生的学号) -->
+	<select id="selectRoundByTeacher" parameterType="object"
+		resultType="map">
+		select a.sid FROM selectRound a,student b where
+			(ROUND1=#{ROUND1} OR ROUND2=#{ROUND1} OR ROUND3=#{ROUND1} OR
+			ROUND4=#{ROUND1}) <!-- 在学生的导师选择志愿中寻找是否此学生的某个志愿为该导师 -->
+			and a.sid NOT IN (select DISTINCT sid from ts) 
+			and a.sid=b.sid and b.grade=#{grade}<!-- 并且该学生当前没有被导师选择 -->
+	</select>
+	
+	<!-- 2018-11-08修改 -->
+	<!-- 第一志愿 -->
+	<select id="selectRoundByTeacherR1" parameterType="object" resultType="map">
+		select a.sid FROM selectRound a,student b 
+		where ROUND1 = #{ROUND1} and a.sid NOT IN (select DISTINCT sid from ts) and a.sid=b.sid and b.grade=#{grade}
+	</select>
+	<!-- 第二志愿 -->
+	<select id="selectRoundByTeacherR2" parameterType="object" resultType="map">
+		select a.sid FROM selectRound a,student b 
+		where ROUND2 = #{ROUND1} and a.sid NOT IN (select DISTINCT sid from ts) and a.sid=b.sid and b.grade=#{grade}
+	</select>
+	<!-- 第三志愿 -->
+	<select id="selectRoundByTeacherR3" parameterType="object" resultType="map">
+		select a.sid FROM selectRound a,student b 
+		where ROUND3 = #{ROUND1} and a.sid NOT IN (select DISTINCT sid from ts) and a.sid=b.sid and b.grade=#{grade}
+	</select>
+	<!-- 第四志愿 -->
+	<select id="selectRoundByTeacherR4" parameterType="object" resultType="map">
+		select a.sid FROM selectRound a,student b 
+		where ROUND4 = #{ROUND1} and a.sid NOT IN (select DISTINCT sid from ts) and a.sid=b.sid and b.grade=#{grade}
+	</select>
+
+	<!-- 查询所有的学生志愿选择结果 -->
+	<select id="selectAllRound" parameterType="object" resultType="map">
+		select * FROM selectRound
+	</select>
+
+	<!-- 添加一条学生志愿选择记录 -->
+	<insert id="insertRound" parameterType="object">
+		INSERT INTO selectRound
+		values(#{sid},#{ROUND1},#{ROUND2},#{ROUND3},#{ROUND4})
+	</insert>
+
+	<!-- 更新该名学生的志愿选择结果 -->
+	<update id="updateRound" parameterType="object">
+		UPDATE selectRound SET ROUND1 = #{ROUND1},ROUND2 = #{ROUND2},ROUND3 =
+		#{ROUND3},ROUND4 = #{ROUND4}
+		WHERE sid = #{sid}
+	</update>
+
+	<!-- 查询所有学生的信息（按照绩点的递减顺序） -->
+	<select id="showStudentAllDesc" resultType="map">
+		select * FROM student order by GPA desc
+	</select>
+
+	<!-- 添加时间信息 -->
+	<insert id="insertCtime" parameterType="object">
+		INSERT INTO controllertime(controllertime) values(#{controllertime})
+	</insert>
+
+	<!-- 根据教师tid查找该名学生的所有选择的学生 -->
+	<select id="showStudentByTeacher" parameterType="object"
+		resultType="map">
+		select * FROM TS
+		<where>
+			<if test="tid != null and tid != ''">
+				tid = #{tid}
+			</if>
+		</where>
+	</select>
+
+	<!-- 删除该名学生的导师选择结果 -->
+	<delete id="deleteTSById" parameterType="object">
+		DELETE FROM TS WHERE sno = #{sno}
+	</delete>
+
+	<update id="updateCtime" parameterType="object">
+		UPDATE controllertime SET SSTT = #{SSTT},TSST = #{TSST},FRTS = #{FRTS},SRTS = #{SRTS},TRTS = #{TRTS},FoRTS = #{FoRTS}
+	</update>
+
+	<select id="showCtime" parameterType="object" resultType="map">
+		select * FROM controllertime
+	</select>
+	<select id="checkCtime" parameterType="object" resultType="int">
+		select count(*) FROM controllertime where controllertime > now()
+	</select>
+
+	<select id="checkTS" parameterType="object" resultType="int">
+		select count(*) FROM TS
+		<where>
+			<if test="tno != null and tno != ''">
+				tno = #{tno}
+			</if>
+			<if test="sno != null and sno != ''">
+				and sno = #{sno}
+			</if>
+		</where>
+	</select>
+	<!-- 管理员更新教师的研究方向信息 -->
+	<update id="A_update_direction" parameterType="object">
+		update teacher
+		set
+		direction = #{content}
+		where tno = #{tno}
+	</update>
+	
+	<!-- 管理员更新教师的研究成果信息 -->
+	<update id="A_update_achievement" parameterType="object">
+		update teacher
+		set achievement = #{content}
+		where tno = #{tno}
+	</update>
+	
+	<!-- 管理员更新教师的教授课程信息 -->
+	<update id="A_update_teach" parameterType="object">
+		update teacher
+		set teach = #{content}
+		where tno = #{tno}
+	</update>
+
+	<!-- 管理员更新教师的研究简介信息 -->
+	<update id="A_update_researchAbstract" parameterType="object">
+		update teacher
+		set
+		researchAbstract = #{content}
+		where tno = #{tno}
+	</update> 
+	
+	<!-- 管理员更新教师的照片信息 -->
+	<update id="A_update_T_picture" parameterType="object">
+		update teacher
+		set picture = #{picture}
+		where tno = #{tno}
+	</update>
+	
+	<!-- 管理员更新学生的照片信息 -->
+	<update id="A_update_S_picture" parameterType="object">
+		update student
+		set picture = #{picture}
+		where sno = #{sno}
+	</update>
+	
+	<!-- 管理员端更新教师信息 -->
+	<update id="updateTeacherByAdmin" parameterType="object">
+		update teacher
+		set tname = #{tname},xb = #{xb},school = #{school},career = #{career},title = #{title},csrq = #{csrq},
+		office = #{office},phone = #{phone},degree = #{degree},num = #{num},email = #{email},phone2 = #{phone2}
+		WHERE tno =  #{tno}
+	</update>
+	
+	<!-- 管理员端更新学生信息 -->
+	<update id="updateStudentByAdmin" parameterType="object">
+		update student
+		SET sname = #{sname},grade = #{grade},school = #{school},
+		career = #{career},sclass = #{sclass},GPA = #{GPA},award = #{award},email = #{email},xb = #{xb},
+		csrq = #{csrq},hobby = #{hobby},phone = #{phone},phone2 = #{phone2}
+		WHERE sno = #{sno}
+	</update>
+	<!--将绩点后20名学生在数据库中标记  -->
+	<update id="update_lowGPA" parameterType="object">
+		update student 
+		inner join(select sid from student where grade=#{grade} order by GPA ASC limit 0,20)b 
+		on student.sid=b.sid set student.lowGPA=1 ;
+	</update>
+	<!-- 查询第一轮被选教师 -->
+	<select id="getRoundTeacher"  resultType="map">
+		select ROUND1 from selectround a,student b where a.sid=b.sid and b.grade=#{garde} group by ROUND1
+	</select>
+	<!-- 查询第2轮被选教师 -->
+	<select id="getRoundTeacher2"  resultType="map">
+		select ROUND2 from selectround a,student b where a.sid=b.sid and b.grade=#{garde} group by ROUND2
+	</select>
+	<!-- 查询第3轮被选教师 -->
+	<select id="getRoundTeacher3"  resultType="map">
+		select ROUND3 from selectround a,student b where a.sid=b.sid and b.grade=#{garde} group by ROUND3
+	</select>
+	<!-- 查询第4轮被选教师 -->
+	<select id="getRoundTeacher4"  resultType="map">
+		select ROUND4 from selectround a,student b where a.sid=b.sid and b.grade=#{garde} group by ROUND4
+	</select>
+	<!-- 查询教师剩余可选数量  -->
+	<select id="getTeacherNum" parameterType="object" resultType="int">
+		select num from teacher where tid=#{tid}
+	</select>
+	<!-- 查询第一轮选择该教师的学生数量 -->
+	<select id="getStudentNum" parameterType="object" resultType="int">
+		select count(*) from selectround a,student b 
+		where a.ROUND1=#{tid} 
+		and a.sid=b.sid 
+		and b.grade=#{grade} 
+		and a.sid not in(select sid from ts)
+	</select>
+	<!-- 查询第2轮选择该教师的学生数量 -->
+	<select id="getStudentNum2" parameterType="object" resultType="int">
+		select count(*) from selectround a,student b 
+		where a.ROUND2=#{tid} 
+		and a.sid=b.sid 
+		and b.grade=#{grade} 
+		and a.sid not in(select sid from ts)
+	</select>
+	<!-- 查询第3轮选择该教师的学生数量 -->
+	<select id="getStudentNum3" parameterType="object" resultType="int">
+		select count(*) from selectround a,student b 
+		where a.ROUND3=#{tid} 
+		and a.sid=b.sid 
+		and b.grade=#{grade} 
+		and a.sid not in(select sid from ts)
+	</select>
+	<!-- 查询第4轮选择该教师的学生数量 -->
+	<select id="getStudentNum4" parameterType="object" resultType="int">
+		select count(*) from selectround a,student b 
+		where a.ROUND4=#{tid} 
+		and a.sid=b.sid 
+		and b.grade=#{grade} 
+		and a.sid not in(select sid from ts)
+	</select>
+	<!-- 查询第一轮选择该教师的学生ID  -->
+	<select id="getStudentId_round1" parameterType="object" resultType="map">
+		select a.sid from student a,selectround b 
+		where a.sid=b.sid and b.ROUND1=#{tid} 
+		and a.grade=#{grade}
+		and b.sid not in(select sid from ts)
+	</select>
+	<!-- 查询第2轮选择该教师的学生ID  -->
+	<select id="getStudentId_round2" parameterType="object" resultType="map">
+		select a.sid from student a,selectround b 
+		where a.sid=b.sid and b.ROUND2=#{tid} 
+		and a.grade=#{grade}
+		and b.sid not in(select sid from ts)
+	</select>
+	<!-- 查询第3轮选择该教师的学生ID  -->
+	<select id="getStudentId_round3" parameterType="object" resultType="map">
+		select a.sid from student a,selectround b 
+		where a.sid=b.sid and b.ROUND3=#{tid} 
+		and a.grade=#{grade}
+		and b.sid not in(select sid from ts)
+	</select>
+	<!-- 查询第4轮选择该教师的学生ID  -->
+	<select id="getStudentId_round4" parameterType="object" resultType="map">
+		select a.sid from student a,selectround b 
+		where a.sid=b.sid and b.ROUND4=#{tid} 
+		and a.grade=#{grade}
+		and b.sid not in(select sid from ts)
+	</select>
+	<select id="getlowGPA_ts" parameterType="object" resultType="int">
+		select count(*) from ts a,student b
+		 where a.sid=b.sid 
+		 and a.tid=#{tid} 
+		 and b.grade=#{grade} 
+		 and b.lowGPA=1
+	</select>
+	<select id="getlowGPA_select1" parameterType="object" resultType="int">
+		select count(*) from selectround a,student b 
+		where a.sid=b.sid
+		and a.ROUND1=#{tid}
+		and b.grade=#{grade}
+		and b.lowGPA=1  
+	</select>
+	<select id="getlowGPA_select2" parameterType="object" resultType="int">
+		select count(*) from selectround a,student b 
+		where a.sid=b.sid
+		and a.ROUND2=#{tid}
+		and b.grade=#{grade}
+		and b.lowGPA=1  
+	</select>
+	<select id="getlowGPA_select3" parameterType="object" resultType="int">
+		select count(*) from selectround a,student b 
+		where a.sid=b.sid
+		and a.ROUND3=#{tid}
+		and b.grade=#{grade}
+		and b.lowGPA=1  
+	</select>
+	<select id="getlowGPA_select4" parameterType="object" resultType="int">
+		select count(*) from selectround a,student b 
+		where a.sid=b.sid
+		and a.ROUND4=#{tid}
+		and b.grade=#{grade}
+		and b.lowGPA=1  
+	</select>
+	<select id="getlowGPA_sid1" parameterType="object" resultType="String">
+		select a.sid from selectround a,student b 
+		where a.sid=b.sid
+		and a.ROUND1=#{tid}
+		and b.grade=#{grade}
+		and b.lowGPA=1
+	</select>
+	<select id="getlowGPA_sid2" parameterType="object" resultType="String">
+		select a.sid from selectround a,student b 
+		where a.sid=b.sid
+		and a.ROUND2=#{tid}
+		and b.grade=#{grade}
+		and b.lowGPA=1
+	</select>
+	<select id="getlowGPA_sid3" parameterType="object" resultType="String">
+		select a.sid from selectround a,student b 
+		where a.sid=b.sid
+		and a.ROUND3=#{tid}
+		and b.grade=#{grade}
+		and b.lowGPA=1
+	</select>
+	<select id="getlowGPA_sid4" parameterType="object" resultType="String">
+		select a.sid from selectround a,student b 
+		where a.sid=b.sid
+		and a.ROUND4=#{tid}
+		and b.grade=#{grade}
+		and b.lowGPA=1
+	</select>
+	<select id="getStudentGrade" parameterType="object" resultType="map">
+		select grade from student group by grade
+	</select>
+	<!-- 获取ts表中教师id -->
+	<select id="ts_Teacher" parameterType="object" resultType="map">
+		select ts.tid from ts,teacher where ts.tid=teacher.tid  group by ts.tid order by teacher.tname ASC
+	</select>
+</mapper>                     

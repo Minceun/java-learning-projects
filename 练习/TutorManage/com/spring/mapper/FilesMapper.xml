@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.mapper.FilesMapper">
+
+	<!-- 查询论文相关文档信息 -->
+	<select id="showFiles" parameterType="object" resultType="map">
+		select * 
+		FROM Files 
+		<where>
+			<if test="sid != null and sid != ''">
+				sid = #{sid}
+			</if>
+		</where>
+	</select>
+	
+	<!--在增加一条论文记录的同时增加一条从属于该论文的相关文档的记录-->
+	<insert id="addFilesRecord" parameterType="object">
+		INSERT 
+		INTO Files(sid)
+		values(#{sid})
+	</insert>
+	
+	<!--在删除一条论文记录的同时删除一条从属于该论文的相关文档的记录-->
+	<delete id="deleteFilesRecord" parameterType="object">
+		delete
+		from files
+		where fileid = #{fileid} and sid = #{sid}
+	</delete>
+	
+	<!-- <insert id="addFiles" parameterType="object">
+		INSERT INTO Files
+		(OpeningReport,sno,ForeignLanguageTranslation,Paper,ArgumentBook,InstructionManual,GuidingOpinions,Otime,
+		Ftime,Ptime,Atime,Itime,Gtime)
+		values(#{OpeningReport},#{sno},#{ForeignLanguageTranslation},#{Paper},#{ArgumentBook},#{InstructionManual},
+		#{GuidingOpinions},#{Otime},#{Ftime},#{Ptime},#{Atime},#{Itime},#{Gtime})
+	</insert> -->
+	
+	<!-- 更新文档记录 -->
+	<update id="updateFiles" parameterType="object">
+		UPDATE Files 
+		SET OpeningReport = #{OpeningReport},
+		ForeignLanguageTranslation =#{ForeignLanguageTranslation},
+		Paper = #{Paper},
+		ArgumentBook =#{ArgumentBook},
+		InstructionManual =#{InstructionManual},
+		GuidingOpinions = #{GuidingOpinions},
+		Ostate =#{Ostate},Fstate =#{Fstate},Pstate =#{Pstate},
+		Astate =#{Astate},Istate =#{Istate},Gstate =#{Gstate},
+		OSnum =#{OSnum},FSnum =#{FSnum},PSnum =#{PSnum},
+		ASnum =#{ASnum},ISnum =#{ISnum},GSnum =#{GSnum},
+		Otime =#{Otime},Ftime =#{Ftime},Ptime =#{Ptime},Atime =#{Atime},Itime
+		=#{Itime},Gtime =#{Gtime},
+		Onum =#{Onum},Fnum =#{Fnum},Pnum =#{Pnum},Anum =#{Anum},Inum =#{Inum},Gnum=#{Gnum},
+		GOstate = #{GOstate},GFstate = #{GFstate},GPstate = #{GPstate},GAstate = #{GAstate},GIstate = #{GIstate},
+		GGstate = #{GGstate},tOpeningReport = #{tOpeningReport},tForeignLanguageTranslation = #{tForeignLanguageTranslation},
+		tPaper = #{tPaper},tArgumentBook = #{tArgumentBook},tOtime = #{tOtime},tFtime = #{tFtime},tPtime = #{tPtime},tAtime = #{tAtime}
+		WHERE sid = #{sid}
+	</update>
+
+	<!-- 删除：更新字段为空 -->
+	<update id="deleteFiles" parameterType="object">
+		UPDATE files 
+		SET OpeningReport=''
+		WHERE fileid = #{fileid}
+	</update>
+
+	<!-- 模板操作 -->
+	<select id="showTemplate" parameterType="object" resultType="map">
+		select * FROM template
+	</select>
+
+	<insert id="addTemplate" parameterType="object">
+		INSERT INTO template
+		(GraduationDesignManual,ScoreTable,ReplyRecord,OpeningReportTemplate,Other)
+		values(#{GraduationDesignManual},#{ScoreTable},#{ReplyRecord},#{OpeningReportTemplate},
+		#{Other})
+	</insert>
+
+	<update id="updateTemplate" parameterType="object">
+		UPDATE template SET
+		GraduationDesignManual = #{GraduationDesignManual},
+		ScoreTable
+		=#{ScoreTable},
+		ReplyRecord = #{ReplyRecord},
+		OpeningReportTemplate
+		=#{OpeningReportTemplate},
+		Other =#{Other}
+	</update>
+
+	<!-- 删除：更新字段为空 -->
+	<update id="deleteTemplate" parameterType="object">
+		UPDATE template SET
+		GraduationDesignManual=''
+	</update>
+
+</mapper>                     

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.mapper.TeacherMapper">
+	
+	<insert id="addTeacher" parameterType="object">
+	INSERT INTO
+	teacher(tname,tno,password,school,career,xb,csrq,title,degree,teach,office,phone,num,email,phone2)
+	values(#{tname},#{tno},MD5(#{password}),#{school},#{career},#{xb},#{csrq},#{title},
+	#{degree},#{teach},#{office},#{phone},#{num},#{email},#{phone2})
+	</insert>
+	
+	<!-- 教师端更新教师的个人信息 -->
+	<update id="updateTeacherByTea" parameterType="object">
+	UPDATE teacher 
+	set xb = #{xb},school = #{school},career = #{career},title = #{title},teach = #{teach},csrq = #{csrq},
+	achievement = #{achievement},direction = #{direction},office = #{office},phone = #{phone},degree = #{degree},picture = #{picture}
+	,email = #{email},phone2 = #{phone2},researchAbstract = #{researchAbstract}
+	WHERE tno =  #{tno}
+	</update> 
+	
+	<update id="updateNum" parameterType="object">
+	UPDATE teacher SET num=#{num} where tno=#{tno}
+	</update>
+	
+	<update id="updateSummary" parameterType="object">
+	UPDATE student SET ActualQuestions = #{ActualQuestions},Type = #{Type},
+	ResearchType=#{ResearchType},InsideORoutside = #{InsideORoutside}
+	WHERE sno =  #{sno}
+	</update> 
+	
+	<delete id="deleteTeacherById">
+     DELETE FROM teacher WHERE tno = #{tno}
+    </delete>
+    
+	<select id="showTeacherInfoById" parameterType="object" resultType="map">
+	select * FROM teacher 
+	<where>
+	    <if test="tid != null and tid != ''">
+			 tid = #{tid}
+		</if> 
+	</where> 
+	</select>
+	
+	<select id="showTeacherInfo" parameterType="object" resultType="map">
+	select * FROM teacher 
+	<where>
+	    <if test="tno != null and tno != ''">
+			tno = #{tno}
+		</if> 
+	</where> 
+	</select>
+	
+	
+	<select id="showTeacherAll"  resultType="map">
+	select * FROM teacher 
+	</select>
+	
+	<select id="showStudentAll"  resultType="map">
+	select * FROM student 
+	</select>
+	<select id="showStudentbygrade" resultType="map" parameterType="object">
+		select * from student where 1=1 
+		<if test="sgrade!=null and sgrade!=''">
+			and grade=#{sgrade}
+		</if>
+		<if test="search!=null and search!=''">
+			 and (sno like #{search} or sname like #{search})
+		</if>
+	</select>
+	
+	 <select id="check_Teacher" parameterType="object" resultType="int">
+	     select count(*) from teacher where tno = #{username} and password = MD5(#{password})
+	 </select>
+</mapper>     
+	
+<!-- 	<select id="getTeacherList" parameterType="object" resultType="map">
+		SELECT * FROM teacher WHERE tid =  #{tid}
+	</select>  -->	                

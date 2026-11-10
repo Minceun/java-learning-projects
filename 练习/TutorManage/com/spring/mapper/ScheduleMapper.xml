@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.mapper.ScheduleMapper">
+	<insert id="addSchedule" parameterType="object">
+		insert into schedule
+		values(#{tid},#{week},#{day},#{sclass},#{affairType},#{affairContent},#{date})
+	</insert>
+	
+	<update id="updateSchedule" parameterType="object">
+    	update schedule
+    	set affairType = #{newAffairType},affairContent = #{affairContent}
+    	where tid = #{tid} and week = #{week} and day = #{day} and sclass = #{sclass}
+	</update>
+	
+	<!-- 根据tid查询教师日程信息 -->
+	<select id="selectScheduleAllByTid" parameterType="object" resultType="map">
+		select *
+		from schedule
+		where tid = #{tid}
+	</select>
+	
+	<!-- 删除所有Schedule表中记录 -->
+	<delete id="deleteAllSchedule" parameterType="map">
+		delete
+		from schedule
+	</delete>
+	
+	<!-- 根据日期查询当前周数 -->
+	<select id="selectWeekByDate" resultType="int" parameterType="object">
+		select DISTINCT week
+		from schedule
+		where date = #{date}
+	</select>
+	
+	<!-- 根据教师id及当前周数查询教师本周所有日程安排 -->
+	<select id="selectWeekInfoByTid" parameterType="object" resultType="map">
+		select *
+		from schedule
+		where tid = #{tid} and week = #{week}
+	</select>
+
+	<!-- 查询该名教师数据库中存在的日程记录数 -->	
+	<select id="selectNumByTid" parameterType="object" resultType="int">
+		select COUNT(*)
+		from schedule
+		where tid = #{tid}
+	</select>
+	
+	<!-- 根据tid删除Schedule表中记录 -->
+	<delete id="deleteScheduleByTid">
+		delete
+		from schedule
+		where tid = #{tid}
+	</delete>
+	
+	<!-- 查询教师和学生存在的有效预约 -->
+	<select id="selectNumByTidAndSid" resultType="int">
+		select COUNT(*)
+		from schedule
+		where tid = #{tid} and affairContent = #{sid} and date >= #{now}
+	</select>
+
+	<!-- 查询当前周的日期 -->
+	<select id="selectWeekInfo" resultType="string">
+		select DISTINCT date
+		from schedule
+		where week = #{week}
+		order by date
+	</select>
+	
+	<!-- 查询某教师某段日程的类型 -->
+	<select id="selectAffairTypeByTid" parameterType="object" resultType="int">
+		select affairType
+		from schedule
+		where tid = #{tid} and week = #{week} and day = #{day} and sclass = #{sclass}
+	</select>
+</mapper>

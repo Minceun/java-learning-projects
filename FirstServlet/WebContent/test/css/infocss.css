@@ -1,0 +1,30 @@
+body{
+	background-image:url(/FirstServlet/test/img/1.jpg);
+	background-repeat: no-repeat;
+	background-size:100% auto;
+}
+#all{
+	color: #FFFFFF;
+	background:rgba(0,0,0,0.3);
+	font-weight:bold;
+	margin:0 auto;
+	width:560px;
+	padding:5px 0;
+	padding-left:200px;
+	padding-right:60px;
+	/*对齐方式*/
+	text-align: left;
+}
+#butt{
+  	width:110px;
+	height:30px;
+	font-size:20px;
+	border:0;
+	border-radius:150px;
+	background-color: azure;
+	border-color: white;
+	color: black;
+}
+hr{
+	visibility: hidden;
+}

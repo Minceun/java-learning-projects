@@ -1,0 +1,59 @@
+@charset "UTF-8";
+body,ul,li{
+	margin: 0;
+	padding: 0;
+}
+ul{
+	list-style-type:none ;
+}
+a{
+	text-decoration: none;
+}
+a:hover{text-decoration:none;/*指鼠标在链接*/}
+.header{
+	/*border: 1px solid black;  */
+	margin: 0 auto;
+	width: 820px;
+	height: 80px;
+	position:center;
+}
+/* .header-logo{
+	float:left;
+	width:62px;
+	height:55px;
+	margin-top:22px;
+	border:1px solid black;
+} */
+.header-logo img{
+	display:block;
+	width:55px;
+	height:40px;
+	background-size: contain ;
+}
+.header-nav{
+	background-color: #FFFFFF;
+	float:left;
+	width:820px;
+	height:80px;
+	position:center;
+	background:rgba(0,0,0,0.3);
+	/*border:1px solid black;*/
+}
+.header-nav .nav-list{
+	width: 820px;
+	height: 88px;
+	font-size:20px;
+}
+.header-nav .nav-list .nav-item{
+	float:left;
+	
+}
+.header-nav .nav-list .nav-item a {
+	display: block;
+	padding:26px 10px 38px;
+	color:white;
+	
+}
+.header-nav .nav-list .nav-item a:hover {
+	color:#ff6700;
+}

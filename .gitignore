@@ -1,0 +1,21 @@
+# macOS
+.DS_Store
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Compiled files
+*.class
+bin/
+build/
+target/
+
+# Logs
+*.log
+
+# IDE
+.idea/
+*.iml
+.vscode/

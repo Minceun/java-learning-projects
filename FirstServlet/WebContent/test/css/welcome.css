@@ -1,0 +1,62 @@
+
+body{
+	background-image:url(/FirstServlet/test/img/1.jpg);
+	background-repeat: no-repeat;
+	background-size:100% auto;
+}
+
+.content{
+	width:57%;
+	height:auto;
+	border:1px solid white;
+	margin:2% auto;
+	text-align:center;
+	background:rgba(0,0,0,0.3);
+}
+.content .add{
+    width:30%;
+	margin:0% auto;
+	text-align:left;
+}
+.content .add .add2{
+    width:250px auto;
+	font-size:18px;
+	color:#fff;
+	border:0;
+	border-bottom:2px solid #fff;
+	padding:8px 10px;
+	background:#ffffff00;
+}
+.content .add #number{
+	font-size:18px;
+	border:0;
+	border-bottom:2px solid #fff;
+	padding:2px 10px;
+    width:100px;
+	height:20px;
+	color: white;
+}
+
+.content .add #but{
+	width:150px;
+	height:40px;
+	font-size:20px;
+	border:0;
+	border-radius:150px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-color: white;
+	color: white;
+	border:1px solid white;
+}
+table{
+	position: relative;
+	margin:10% auto ;
+	text-align:center ;
+	color: white ;
+}
+#hh{
+	color: white;
+}
+.my-modal{
+	text-align:center ;
+}

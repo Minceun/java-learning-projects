@@ -1,0 +1,35 @@
+body{
+	background-image:url(/FirstServlet/test/img/1.jpg);
+	background-repeat: no-repeat;
+	background-size:100% auto;
+}
+
+.content{
+	width:50%;
+	height:auto;
+	border:1px solid white;
+	margin:4% auto;
+	text-align:center;
+	background:rgba(0,0,0,0.3);
+}
+.content .butt input{
+	width:200px;
+	height:40px;
+	border:0;
+	border-radius:150px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-color: white;
+	color: white;
+	border:1px solid white;
+}
+.content h2{
+	color: white;
+}
+#all{
+/* 	margin:0 auto;
+ *//* 	padding:5px 0;
+ */	padding-left:300px;
+/* 	padding-right:60px;
+ */	/* 对齐方式 */
+	text-align: left;
+}

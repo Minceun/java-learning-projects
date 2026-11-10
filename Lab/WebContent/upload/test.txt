@@ -1,0 +1,99 @@
+package zhou;
+public class Test0706 {
+	public static void main(String[] args)
+	{
+		System.out.println("测试");
+		Point p=new Point(3,5);
+		p.draw();
+		System.out.println(p.toString());
+		Point p1=new Point(6,7);
+		p1.draw();
+		System.out.println(p1.toString());
+		Segment s=new Segment(p,p1);
+		s.draw();
+		System.out.println(s.toString());
+		Rectangle r=new Rectangle(p,40,50);
+		r.draw();
+		System.out.println(r.toString());
+		Point3D p3D=new Point3D(2,3,4);
+		p3D.draw();
+		System.out.println(p3D.toString());
+	}
+}
+abstract class Graphics{
+	public abstract void draw();
+}
+class Point extends Graphics{
+	@Override
+	public String toString() {
+		return "Point [x=" + x + ", y=" + y + "]";
+	}
+	private int x;
+	private int y;
+	public Point(int x, int y) {
+		super();
+		this.x = x;
+		this.y = y;
+	}
+	@Override
+	public void draw() {
+		// TODO 自动生成的方法存根
+		System.out.println("画二维点");
+	}
+}
+class Segment extends Graphics{
+	@Override
+	public String toString() {
+		return "Segment [ptStart=" + ptStart + ", ptEnd=" + ptEnd + "]";
+	}
+	private Point ptStart;
+	private Point ptEnd;
+	
+	public Segment(Point ptStart, Point ptEnd) {
+		super();
+		this.ptStart = ptStart;
+		this.ptEnd = ptEnd;
+	}
+	@Override
+	public void draw() {
+		// TODO 自动生成的方法存根
+		System.out.println("画扇形");
+	}
+}
+class Rectangle extends Graphics{
+	@Override
+	public String toString() {
+		return "Rectangle [ptUpperLeft=" + ptUpperLeft + ", nWidth=" + nWidth + ", nHeight=" + nHeight + "]";
+	}
+	private Point ptUpperLeft;
+	private int nWidth;
+	private int nHeight;
+	
+	public Rectangle(Point ptUpperLeft, int nWidth, int nHeight) {
+		super();
+		this.ptUpperLeft = ptUpperLeft;
+		this.nWidth = nWidth;
+		this.nHeight = nHeight;
+	}
+	@Override
+	public void draw() {
+		// TODO 自动生成的方法存根
+		System.out.println("画矩形");
+	}
+}
+class Point3D extends Point{
+	@Override
+	public String toString() {
+		return "Point3D [z=" + z + "]";
+	}
+	private int z;
+	public Point3D(int x, int y, int z) {
+		super(x, y);
+		this.z = z;
+	}
+	@Override
+	public void draw() {
+		// TODO 自动生成的方法存根
+		System.out.println("画三维点");
+	}
+}
